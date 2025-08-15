@@ -1,0 +1,92 @@
+{% extends "student_layout.html" %}
+{% block content %}
+<!-- Student Header Section -->
+<div class="d-flex align-items-center mb-4">
+    <div class="avatar bg-primary text-white rounded-circle d-flex justify-content-center align-items-center me-3"
+         style="width: 60px; height: 60px; font-size: 1.5rem;">
+        {{ student.name.split()[0][0] }}{{ student.name.split()[-1][0] }}
+    </div>
+    <div>
+        <h5 class="mb-0">{{ student.name }}</h5>
+        <small class="text-muted">Last visited: {{ student.last_visited or "First time" }}</small>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row g-3">
+        <!-- Summary Cards -->
+        <div class="col-md-4">
+            <div class="card text-white bg-warning h-100">
+                <div class="card-body text-center">
+                    <h1 class="display-5">{{ summary.requested_count }}</h1>
+                    <p class="mb-0">Book Requests</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-danger h-100">
+                <div class="card-body text-center">
+                    <h1 class="display-5">{{ summary.pending_count }}</h1>
+                    <p class="mb-0">Pending Approvals</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success h-100">
+                <div class="card-body text-center">
+                    <h1 class="display-5">{{ summary.approved_count }}</h1>
+                    <p class="mb-0">Approved Requests</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="row mt-4">
+        <div class="col-md-7">
+            <h5>📖 Recent Transactions</h5>
+            <table class="table table-bordered table-sm bg-white">
+                <thead class="table-light">
+                    <tr>
+                        <th>Book</th>
+                        <th>Issued</th>
+                        <th>Returned</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in transactions[:5] %}
+                    <tr>
+                        <td>{{ t.title }}</td>
+                        <td>{{ t.issue_date }}</td>
+                        <td>{{ t.return_date if t.returned else 'Not returned' }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="3" class="text-center">No recent transactions</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Tasks (Requests) -->
+        <div class="col-md-5">
+            <h5>📝 Your Book Requests</h5>
+            <ul class="list-group">
+                {% for req in requests %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ req.title }}
+                    <span class="badge 
+                        {% if req.status == 'pending' %} bg-warning
+                        {% elif req.status == 'approved' %} bg-success
+                        {% else %} bg-secondary {% endif %}
+                    ">
+                        {{ req.status.capitalize() }}
+                    </span>
+                </li>
+                {% else %}
+                <li class="list-group-item text-muted">No book requests yet</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

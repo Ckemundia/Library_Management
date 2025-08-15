@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Members - KIM Library</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f5f7fa;
+        }
+        .sidebar {
+            height: 100vh;
+            background-color: #1f2d3d;
+            padding: 20px;
+            color: white;
+        }
+        .sidebar .nav-link {
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        .sidebar .nav-link:hover {
+            background: #34495e;
+            border-radius: 5px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .form-section {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        table img {
+            height: 40px;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-2 sidebar">
+            <h5>KIM Library</h5>
+            <hr>
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="/librarian/dashboard">🏠 Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="/books">📚 Books</a></li>
+                <li class="nav-item"><a class="nav-link" href="/members">👤 Members</a></li>
+                <li class="nav-item"><a class="nav-link" href="/transactions">🔁 Transactions</a></li>
+                <li class="nav-item"><a class="nav-link" href="/librarian/logout">🚪 Logout</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-10 content">
+            <h4 class="mb-4">📋 Manage Members</h4>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="row">
+                <!-- Member List -->
+                <div class="col-md-8">
+                    <div class="bg-white p-3 rounded shadow-sm mb-3">
+                        <form method="get" action="/members" class="d-flex">
+                            <input type="text" name="search" class="form-control me-2" placeholder="Search by name, ID or role" value="{{ search }}">
+                            <button class="btn btn-outline-primary" type="submit">🔍 Search</button>
+                        </form>
+                    </div>
+
+                    <div class="table-responsive bg-white p-3 rounded shadow-sm">
+                        <h5>All Members</h5>
+                        <table class="table table-hover table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Member ID</th>
+                                    <th>Role</th>
+                                    <th>Contact</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for member in members %}
+                                    <tr>
+                                        <td>{{ member.id }}</td>
+                                        <td>{{ member.name }}</td>
+                                        <td>{{ member.member_id }}</td>
+                                        <td>{{ member.role }}</td>
+                                        <td>{{ member.contact }}</td>
+                                    </tr>
+                                {% endfor %}
+                                {% if members|length == 0 %}
+                                    <tr><td colspan="5" class="text-center text-muted">No members found.</td></tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Add Member Form -->
+                <div class="col-md-4">
+                    <div class="form-section shadow-sm">
+                        <h5>Add Member</h5>
+                        <form method="POST" action="/add_member">
+                            <div class="mb-2">
+                                <label>Name:</label>
+                                <input type="text" name="name" class="form-control" required>
+                            </div>
+                            <div class="mb-2">
+                                <label>Member ID:</label>
+                                <input type="text" name="member_id" class="form-control" required>
+                            </div>
+                            <div class="mb-2">
+                                <label>Contact:</label>
+                                <input type="text" name="contact" class="form-control" required>
+                            </div>
+                            <div class="mb-2">
+                                    <label>Password (only for students):</label>
+                                    <div class="input-group">
+                                        <input type="password" name="password" id="password" class="form-control">
+                                        <span class="input-group-text" id="togglePassword" style="cursor: pointer;">👁️</span>
+                                    </div>
+                                </div>
+                            <button type="submit" class="btn btn-primary w-100">Add Member</button>
+                        </form>
+                    </div>
+                </div>
+            </div> <!-- row -->
+        </div> <!-- content -->
+    </div> <!-- row -->
+</div> <!-- container -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Auto-dismiss flash alerts after 4 seconds
+    setTimeout(() => {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            // Bootstrap fade out and remove
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 4000);
+</script>
+<script>
+    // Toggle password visibility
+    document.getElementById('togglePassword').addEventListener('click', function () {
+        const passwordField = document.getElementById('password');
+        const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordField.setAttribute('type', type);
+        this.textContent = type === 'password' ? '👁️' : '🙈';
+    });
+</script>
+
+</body>
+</html>

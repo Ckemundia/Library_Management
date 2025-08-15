@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Library Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f2f6fc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            transition: background-color 0.4s ease;
+        }
+
+        .dark-mode {
+            background-color: #1e1e1e;
+            color: #f1f1f1;
+        }
+
+        .login-card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease-in-out, background-color 0.4s ease, color 0.4s ease;
+        }
+
+        .login-card:hover {
+            transform: scale(1.02);
+        }
+
+        .dark-mode .login-card {
+            background: #2c2c2c;
+            color: white;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            border-radius: 10px;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .login-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .icon {
+            font-size: 50px;
+            margin-bottom: 20px;
+            color: #0d6efd;
+            transition: color 0.3s ease;
+        }
+
+        .dark-mode .icon {
+            color: #66b2ff;
+        }
+
+        .toggle-darkmode {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 576px) {
+            .login-btn {
+                font-size: 16px;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Dark Mode Toggle -->
+    <div class="toggle-darkmode" onclick="toggleDarkMode()" title="Toggle dark mode">🌓</div>
+
+    <div class="login-card">
+        <div class="icon">📚</div>
+        <h3 class="mb-4">Welcome to KIM Library</h3>
+        <a href="/student/login" class="btn btn-outline-primary login-btn mb-3">🎓 Student Login</a>
+        <a href="/librarian/login" class="btn btn-outline-success login-btn">🧑‍🏫 Librarian Login</a>
+    </div>
+
+    <script>
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+        }
+    </script>
+
+</body>
+</html>

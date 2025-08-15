@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Transactions - KIM Library</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background: #f5f7fa;
+        }
+        .sidebar {
+            height: 100vh;
+            background-color: #1f2d3d;
+            padding: 20px;
+            color: white;
+        }
+        .sidebar .nav-link {
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        .sidebar .nav-link:hover {
+            background: #34495e;
+            border-radius: 5px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .badge-status {
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-2 sidebar">
+            <h5>KIM Library</h5>
+            <hr>
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="/librarian/dashboard">🏠 Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="/books">📚 Manage Books</a></li>
+                <li class="nav-item"><a class="nav-link" href="/members">👥 Members</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/transactions">🔄 Transactions</a></li>
+                <li class="nav-item"><a class="nav-link" href="/librarian/logout">🚪 Logout</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-10 content">
+            <h4 class="mb-4">📄 Transactions</h4>
+
+            <!-- Issue Book Form -->
+            <div class="card mb-4">
+                <div class="card-header">Issue a Book</div>
+                <div class="card-body">
+                    <form method="POST" action="/issue_book" class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Book</label>
+                            <select name="book_id" class="form-select select2" required>
+                                <option value="">-- Select Book --</option>
+                                {% for book in books %}
+                                    <option value="{{ book.id }}">{{ book.title }} by {{ book.author }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Student</label>
+                            <select name="member_id" class="form-select select2" required>
+                                <option value="">-- Select Student --</option>
+                                {% for member in members %}
+                                    <option value="{{ member.id }}">{{ member.name }} ({{ member.member_id }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-success w-100">Issue</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Transaction Table -->
+            <div class="card">
+                <div class="card-header">All Transactions</div>
+                <div class="card-body table-responsive">
+                    <table class="table table-hover table-bordered align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Book</th>
+                                <th>Student</th>
+                                <th>Status</th>
+                                <th>Issued</th>
+                                <th>Returned</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for txn in transactions %}
+                            <tr>
+                                <td>{{ txn.id }}</td>
+                                <td>{{ txn.title }}</td>
+                                <td>{{ txn.name }}</td>
+                                <td>
+                                    {% if txn.status == 'pending' %}
+                                        <span class="badge bg-warning text-dark badge-status">Pending</span>
+                                    {% elif txn.status == 'issued' %}
+                                        <span class="badge bg-primary badge-status">Issued</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary badge-status">N/A</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ txn.issue_date or '-' }}</td>
+                                <td>
+                                    {% if txn.returned %}
+                                        ✅ {{ txn.return_date }}
+                                    {% else %}
+                                        ❌
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if txn.status == 'pending' %}
+                                        <form method="POST" action="/approve_request" class="d-inline">
+                                            <input type="hidden" name="transaction_id" value="{{ txn.id }}">
+                                            <button type="submit" class="btn btn-sm btn-outline-success">Approve</button>
+                                        </form>
+                                    {% endif %}
+                                    {% if not txn.returned %}
+                                        <a href="/return_book/{{ txn.id }}" class="btn btn-sm btn-outline-danger">Return</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery (required by Select2) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.select2').select2({
+            width: '100%',
+            placeholder: 'Search...',
+            allowClear: true
+        });
+    });
+</script>
+
+</body>
+</html>

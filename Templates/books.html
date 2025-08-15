@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Books - KIM Library</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f5f7fa;
+        }
+        .sidebar {
+            height: 100vh;
+            background-color: #1f2d3d;
+            padding: 20px;
+            color: white;
+        }
+        .sidebar .nav-link {
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        .sidebar .nav-link:hover {
+            background: #34495e;
+            border-radius: 5px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .table img {
+            max-height: 50px;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-2 sidebar">
+            <h5>KIM Library</h5>
+            <hr>
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="/librarian/dashboard">🏠 Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="/books">📚 Manage Books</a></li>
+                <li class="nav-item"><a class="nav-link" href="/members">👥 Members</a></li>
+                <li class="nav-item"><a class="nav-link" href="/transactions">🔁 Transactions</a></li>
+                <li class="nav-item"><a class="nav-link" href="/librarian/logout">🚪 Logout</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-10 content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4>📚 Manage Books</h4>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBookModal">➕ Add Book</button>
+            </div>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+
+            <!-- Search Form -->
+            <form class="input-group mb-4" method="GET" action="/books">
+                <input type="text" class="form-control" name="search" placeholder="Search by title, author or ISBN" value="{{ request.args.get('search', '') }}">
+                <button class="btn btn-outline-secondary" type="submit">🔍 Search</button>
+            </form>
+
+            <!-- Book Table -->
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Cover</th>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>ISBN</th>
+                            <th>Category</th>
+                            <th>Available</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for book in books %}
+                        <tr>
+                            <td>{{ book.id }}</td>
+                            <td>
+                                {% if book.cover %}
+                                    <img src="{{ url_for('static', filename='covers/' ~ book.cover) }}" alt="Cover">
+                                {% else %}
+                                    <span class="text-muted">No Image</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ book.title }}</td>
+                            <td>{{ book.author }}</td>
+                            <td>{{ book.isbn }}</td>
+                            <td>{{ book.category }}</td>
+                            <td>{{ book.available }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Book Modal -->
+<div class="modal fade" id="addBookModal" tabindex="-1" aria-labelledby="addBookModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" method="POST" action="/add_book" enctype="multipart/form-data">
+        <div class="modal-header">
+            <h5 class="modal-title" id="addBookModalLabel">Add New Book</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="mb-3">
+                <label>Title</label>
+                <input type="text" name="title" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label>Author</label>
+                <input type="text" name="author" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label>ISBN</label>
+                <input type="text" name="isbn" class="form-control" required>
+            </div>
+           <div class="mb-3">
+    <label>Category</label>
+    <select name="category" class="form-select" required>
+        <option value="" disabled selected>Select a category</option>
+        <option value="Science">Science</option>
+        <option value="Technology">Technology</option>
+        <option value="Engineering">Engineering</option>
+        <option value="Mathematics">Mathematics</option>
+        <option value="History">History</option>
+        <option value="Fiction">Fiction</option>
+        <option value="Biography">Biography</option>
+        <option value="Other">Other</option>
+    </select>
+</div>
+
+            <div class="mb-3">
+                <label>Cover Image</label>
+                <input type="file" name="cover" accept="image/*" class="form-control">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-success">Add Book</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+    </form>
+  </div>
+</div>
+
+<!-- Bootstrap JS (required for modal) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
